@@ -20,7 +20,7 @@
 | 第五回   | [加上 Command 與 Rule](https://www.youtube.com/watch?v=dUl3J6j8UrU)                                          |
 | 第五點五回 | [中場回顧](https://www.youtube.com/watch?v=sdTWeMaCuvU)                                                       |
 | 第六回   | OOA [6-1](https://www.youtube.com/watch?v=HfZJAue0ioc)、[6-2](https://www.youtube.com/watch?v=t-MaN5L8qsA) | 
-| 第七回   | Walking Skeleton (ongoing)                                                                                |
+| 第七回   | [Walking Skeleton](https://youtu.be/65vgFa4gBXE)                                                          |
 | 第八回   | ATDD (ongoing)                                                                                            |
 
 ### 5/2 中場回顧
