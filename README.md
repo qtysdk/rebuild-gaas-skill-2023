@@ -21,7 +21,8 @@
 | 第五點五回 | [中場回顧](https://www.youtube.com/watch?v=sdTWeMaCuvU)                                                       |
 | 第六回   | OOA [6-1](https://www.youtube.com/watch?v=HfZJAue0ioc)、[6-2](https://www.youtube.com/watch?v=t-MaN5L8qsA) | 
 | 第七回   | [Walking Skeleton](https://youtu.be/65vgFa4gBXE)                                                          |
-| 第八回   | ATDD (ongoing)                                                                                            |
+| 第八回   | 8-1 [計劃一下 ATDD 要涵蓋的範圍](https://youtu.be/PQiFmegOP8o)                                                      |
+|       | 8-2 [開始實作 Happy Path：佈置遊戲](https://youtu.be/N81QaWKeXnY)                                                  |
 
 ### 5/2 中場回顧
 
@@ -32,3 +33,11 @@ Rule。其它就先忽略，後面有需要再補就好。
 
 接著，可能做一些 OOA 的開頭，再來弄點不太需要有 Domain Knowledge 的 Walking Skeleton，有了基礎建設後就可以來做 ATDD 與
 Example Mapping 囉！Example Mapping 同樣是有用到才討論，ATDD 戰霧開到哪 Example Mapping 才做到那邊。
+
+### 5/14 起頭開工 Happy Path
+
+在第八回開始，我們會大量提高實作的比例。畢竟，先前討論的內容，已經足夠用來實作很多東西了。
+在那之前，我們還不需要進展到 Example Mapping 下去展開各種「舉例說明」。單純，先滿足實作中最 `快樂` 與 `單純` 的部分。
+
+在這次的實作過程中，我們有提到 Clean Architecture，但在初期只是借用它的概念，並沒有打算要完美地實作出這樣的架構，只是先稍為對應一下。
+儘管沒有這麼規劃但該有的「責任」並不會因為沒有依特定架構實作就消失，只是它會混雜在一起罷了。
