@@ -20,6 +20,10 @@ class CreateGameInput(BaseModel):
     players: List[PlayerInput]
 
 
+class PlayerPrepareInput(BaseModel):
+    cards: List[str]
+
+
 class Repository:
 
     def __init__(self):
@@ -35,6 +39,15 @@ class Repository:
 repo = Repository()
 
 
+class RoleCard:
+
+    def __init__(self, name):
+        self.name = name
+
+    def as_view(self):
+        return self.name
+
+
 class Player:
 
     # TODO 要有 5 張這回合用的牌
@@ -43,6 +56,14 @@ class Player:
 
     def __init__(self, player_id):
         self.id = player_id
+        self.cards: List[RoleCard] = []
+
+    def add_card_by_name(self, card_name: str):
+        # TODO 轉成 Card 物件
+        self.cards.append(RoleCard(card_name))
+
+    def as_view(self):
+        return dict(player_id=self.id, cards=[x.as_view() for x in self.cards])
 
 
 class Game:
@@ -56,6 +77,9 @@ class Game:
     # 2. 分剩給玩家剩餘的金塊、藥材。
 
     def __init__(self):
+        # game_created
+        # round_started
+        self.state = "game_created"
         self.id = "game-9527"
         self.players: List[Player] = []
 
@@ -65,7 +89,20 @@ class Game:
 
     def as_view(self):
         players = [dict(id=x.id) for x in self.players]
-        return {"game_id": self.id, "players": players}
+        return {"game_id": self.id, "state": self.state, "players": players}
+
+    def refresh_state(self):
+        # game_created -> all players have prepared -> round_started
+        if self.state == "game_created" and len([x for x in self.players if len(x.cards) == 5]) == len(self.players):
+            # TODO rules for round_started
+            """
+            每回合的準備:
+
+            [done] 1. 玩家由手中的 12 張牌, 挑選 5 張作為此回合的牌組。
+            [ ] 2. 隨機選擇一位玩家, 作為第一回合起始玩家開始回合。
+            [ ] 3. 上一回合的贏家 為回合始起玩家。
+            """
+            self.state = "round_started"
 
 
 # Web (HTTP Client)
@@ -87,6 +124,23 @@ async def create_game(request_body: CreateGameInput):
 async def look_up_game(game_id: str):
     game = repo.find(game_id)
     return game.as_view()
+
+
+@app.post("/games/{game_id}/player/{player_id}/prepare")
+async def prepare_round(game_id: str, player_id: str, prepared_cards: PlayerPrepareInput):
+    game = repo.find(game_id)
+    player = [x for x in game.players if x.id == player_id][0]
+
+    # TODO exactly 5 cards in the prepared cards
+    for card in prepared_cards.cards:
+        player.add_card_by_name(card)
+
+    # Aggregate Root
+    # Tx bounded
+    # State machine
+    game.refresh_state()
+
+    return player.as_view()
 
 
 if __name__ == "__main__":
