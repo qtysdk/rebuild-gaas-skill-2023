@@ -23,6 +23,8 @@
 | 第七回   | [Walking Skeleton](https://youtu.be/65vgFa4gBXE)                                                          |
 | 第八回   | 8-1 [計劃一下 ATDD 要涵蓋的範圍](https://youtu.be/PQiFmegOP8o)                                                      |
 |       | 8-2 [開始實作 Happy Path：佈置遊戲](https://youtu.be/N81QaWKeXnY)                                                  |
+|       | 8-3 [實作玩家回合準備 (上)](https://youtu.be/PTd9j_a3AaA)                                                          |
+|       | 8-3 [實作玩家回合準備 (下)](https://youtu.be/8Cc55aWnzjQ)                                                          |
 
 ### 5/2 中場回顧
 
@@ -41,3 +43,20 @@ Example Mapping 囉！Example Mapping 同樣是有用到才討論，ATDD 戰霧�
 
 在這次的實作過程中，我們有提到 Clean Architecture，但在初期只是借用它的概念，並沒有打算要完美地實作出這樣的架構，只是先稍為對應一下。
 儘管沒有這麼規劃但該有的「責任」並不會因為沒有依特定架構實作就消失，只是它會混雜在一起罷了。
+
+### 5/21 實作玩家回合準備
+
+![focus on prepare cards](docs/part8_3_partial_es.png)
+
+接續著前一次進度「建立遊戲」之後，我們開始實作玩家回合準備的 API。在這裡，個別的玩家可以指令自己在這回合要使用的 5 張角色卡。
+
+在這階段，玩家會各自提交 5 張要使用的卡片，最後一位玩家完成準備，遊戲就可以進入「回合已開始」的階段了。
+這即可以反應出 Aggregate Root 是一種狀態機的概念：
+
+![aggregate root as a state machine](docs/game_state_machine.png)
+
+延續著先前的實作節奏，還沒用到的就不理它。所以，我們的「準備遊戲回合」只替使用者建立了 RoleCard 類別，其它資源先忽略。
+而 RoleCard 類別，目前還沒有真的實作遊戲中真實的卡片。
+
+那些真實的卡片不見得需要那麼早就做出來，我們可讓「流程完備」與「充實概念」是可以分開的。
+針對流程上的遊戲機制可以先行，後續只是將具體的概念充上而已。
