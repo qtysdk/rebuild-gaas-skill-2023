@@ -120,6 +120,11 @@ class Game:
             """
             self.state = "round_started"
 
+        if self.state == "player_finished":
+            if len([x for x in self.players if x.action]) == len(self.players):
+                self.state = "round_started"
+                # TODO we should clean player's action
+
     def claim_role(self, player_id: str, card: str):
         player = [x for x in self.players if x.id == player_id]
         if not player:
