@@ -78,6 +78,9 @@ class Player:
         self.cards.remove(cards)
         self.action = {"claim_role": card_name}
 
+    def do_pass(self):
+        self.action = {"pass": True}
+
 
 class Game:
 
@@ -128,6 +131,16 @@ class Game:
         self.state = "player_finished"
         return player
 
+    def pass_action(self, player_id: str):
+        player = [x for x in self.players if x.id == player_id]
+        if not player:
+            raise Exception(f'not such player: {player_id}')
+        else:
+            player = player[0]
+        player.do_pass()
+        self.state = "player_finished"
+        return player
+
 
 # Web (HTTP Client)
 # Controller (寫你的 API)
@@ -175,6 +188,21 @@ async def claim_role(game_id: str, player_id: str, role: ClaimRoleInput):
 
     # TODO verify the player being able to do the action
     player = game.claim_role(player_id, role.card)
+    # -> is the claim validation
+
+    game.refresh_state()
+    repo.save(game)
+
+    return player.as_view()
+
+
+@app.post("/games/{game_id}/player/{player_id}/pass")
+async def pass_action(game_id: str, player_id: str):
+    game = repo.find(game_id)
+    # TODO -> is the player's turn? (check it later)
+    # TODO verify the player being able to do the action
+
+    player = game.pass_action(player_id)
     # -> is the claim validation
 
     game.refresh_state()
