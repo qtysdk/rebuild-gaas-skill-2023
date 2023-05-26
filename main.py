@@ -139,6 +139,7 @@ async def prepare_round(game_id: str, player_id: str, prepared_cards: PlayerPrep
     # Tx bounded
     # State machine
     game.refresh_state()
+    repo.save(game)
 
     return player.as_view()
 
