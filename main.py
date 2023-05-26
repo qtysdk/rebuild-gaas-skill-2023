@@ -24,6 +24,10 @@ class PlayerPrepareInput(BaseModel):
     cards: List[str]
 
 
+class ClaimRoleInput(BaseModel):
+    card: str
+
+
 class Repository:
 
     def __init__(self):
@@ -57,13 +61,25 @@ class Player:
     def __init__(self, player_id):
         self.id = player_id
         self.cards: List[RoleCard] = []
+        self.action = {}
 
     def add_card_by_name(self, card_name: str):
         # TODO 轉成 Card 物件
         self.cards.append(RoleCard(card_name))
 
     def as_view(self):
-        return dict(player_id=self.id, cards=[x.as_view() for x in self.cards])
+        view = dict(player_id=self.id, cards=[x.as_view() for x in self.cards])
+        if self.action:
+            view['action'] = self.action
+        return view
+
+    def claim_role(self, card_name: str):
+        cards = [x for x in self.cards if x.name == card_name][0]
+        self.cards.remove(cards)
+        self.action = {"claim_role": card_name}
+
+    def do_pass(self):
+        self.action = {"pass": True}
 
 
 class Game:
@@ -104,6 +120,32 @@ class Game:
             """
             self.state = "round_started"
 
+        if self.state == "player_finished":
+            if len([x for x in self.players if x.action]) == len(self.players):
+                self.state = "round_started"
+                # TODO we should clean player's action
+
+    def claim_role(self, player_id: str, card: str):
+        player = [x for x in self.players if x.id == player_id]
+        if not player:
+            raise Exception(f'not such player: {player_id}')
+        else:
+            player = player[0]
+
+        player.claim_role(card)
+        self.state = "player_finished"
+        return player
+
+    def pass_action(self, player_id: str):
+        player = [x for x in self.players if x.id == player_id]
+        if not player:
+            raise Exception(f'not such player: {player_id}')
+        else:
+            player = player[0]
+        player.do_pass()
+        self.state = "player_finished"
+        return player
+
 
 # Web (HTTP Client)
 # Controller (寫你的 API)
@@ -139,6 +181,37 @@ async def prepare_round(game_id: str, player_id: str, prepared_cards: PlayerPrep
     # Tx bounded
     # State machine
     game.refresh_state()
+    repo.save(game)
+
+    return player.as_view()
+
+
+@app.post("/games/{game_id}/player/{player_id}/claim_role")
+async def claim_role(game_id: str, player_id: str, role: ClaimRoleInput):
+    game = repo.find(game_id)
+    # TODO -> is the player's turn? (check it later)
+
+    # TODO verify the player being able to do the action
+    player = game.claim_role(player_id, role.card)
+    # -> is the claim validation
+
+    game.refresh_state()
+    repo.save(game)
+
+    return player.as_view()
+
+
+@app.post("/games/{game_id}/player/{player_id}/pass")
+async def pass_action(game_id: str, player_id: str):
+    game = repo.find(game_id)
+    # TODO -> is the player's turn? (check it later)
+    # TODO verify the player being able to do the action
+
+    player = game.pass_action(player_id)
+    # -> is the claim validation
+
+    game.refresh_state()
+    repo.save(game)
 
     return player.as_view()
 
