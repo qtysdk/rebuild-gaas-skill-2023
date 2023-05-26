@@ -10,12 +10,12 @@ def test_happy_path():
     # Game created
     #
 
-    request_body = {"players": [
+    other_players_request_body = {"players": [
         {"id": "player-1"},
         {"id": "player-2"},
         {"id": "player-3"},
     ]}
-    response = client.post("/games", json=request_body)
+    response = client.post("/games", json=other_players_request_body)
 
     assert response.status_code == 200
 
@@ -41,13 +41,19 @@ def test_happy_path():
     # Players prepare their round
     #
 
-    request_body = {
+    initial_player_request_body = {
         "cards": [
             "card-1", "card-2", "card-3", "card-4", "card-5"
         ]
     }
 
-    response = client.post('/games/game-9527/player/player-1/prepare', json=request_body)
+    other_players_request_body = {
+        "cards": [
+            "card-6", "card-2", "card-3", "card-4", "card-5"
+        ]
+    }
+
+    response = client.post('/games/game-9527/player/player-1/prepare', json=initial_player_request_body)
     expected = {"player_id": "player-1", "cards": [
         "card-1", "card-2", "card-3", "card-4", "card-5"
     ]}
@@ -55,17 +61,17 @@ def test_happy_path():
     assert response.json() == expected
     check_game_state(client, "game_created")
 
-    response = client.post('/games/game-9527/player/player-2/prepare', json=request_body)
+    response = client.post('/games/game-9527/player/player-2/prepare', json=other_players_request_body)
     expected = {"player_id": "player-2", "cards": [
-        "card-1", "card-2", "card-3", "card-4", "card-5"
+        "card-6", "card-2", "card-3", "card-4", "card-5"
     ]}
     assert response.status_code == 200
     assert response.json() == expected
     check_game_state(client, "game_created")
 
-    response = client.post('/games/game-9527/player/player-3/prepare', json=request_body)
+    response = client.post('/games/game-9527/player/player-3/prepare', json=other_players_request_body)
     expected = {"player_id": "player-3", "cards": [
-        "card-1", "card-2", "card-3", "card-4", "card-5"
+        "card-6", "card-2", "card-3", "card-4", "card-5"
     ]}
     assert response.status_code == 200
     assert response.json() == expected
