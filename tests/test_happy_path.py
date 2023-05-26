@@ -77,6 +77,33 @@ def test_happy_path():
     assert response.json() == expected
     check_game_state(client, "round_started")
 
+    #
+    # players start actions
+    #
+    response = client.post('/games/game-9527/player/player-1/claim_role', json={"card": "card-1"})
+    expected = {"player_id": "player-1", "cards": [
+        "card-2", "card-3", "card-4", "card-5"
+    ], "action": {"claim_role": "card-1"}}
+    assert response.status_code == 200
+    assert response.json() == expected
+    check_game_state(client, "player_finished")
+
+    # response = client.post('/games/game-9527/player/player-2/pass')
+    # expected = {"player_id": "player-1", "cards": [
+    #     "card-1", "card-2", "card-3", "card-4", "card-5"
+    # ], "action": {"pass": True}}
+    # assert response.status_code == 200
+    # assert response.json() == expected
+    # check_game_state(client, "player_finished")
+    #
+    # response = client.post('/games/game-9527/player/player-3/pass')
+    # expected = {"player_id": "player-1", "cards": [
+    #     "card-1", "card-2", "card-3", "card-4", "card-5"
+    # ], "action": {"pass": True}}
+    # assert response.status_code == 200
+    # assert response.json() == expected
+    # check_game_state(client, "round_started")
+
 
 def check_game_state(client, expected_state: str):
     response = client.get("/games/game-9527")
